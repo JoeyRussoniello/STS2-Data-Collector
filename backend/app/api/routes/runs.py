@@ -11,7 +11,7 @@ from app.domain.services import RunService
 router = APIRouter(prefix="/runs", tags=["runs"])
 
 
-@router.post("/")
+@router.post("")
 async def upload_run(
     body: RunUploadRequest,
     svc: RunService = Depends(get_run_service),
