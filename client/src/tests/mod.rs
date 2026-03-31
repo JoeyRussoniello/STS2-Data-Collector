@@ -1,5 +1,6 @@
 use crate::discovery::*;
 use crate::record::*;
+use crate::retry::{RetryEntry, RetryQueue};
 use crate::state::ClientState;
 use crate::watcher::{start_watchers, RunEvent};
 use std::collections::HashSet;
@@ -377,4 +378,112 @@ fn watcher_handles_multiple_dirs() {
     }
     assert!(seen.contains("a"), "missing event from first dir");
     assert!(seen.contains("b"), "missing event from second dir");
+}
+
+// ---- RetryEntry ----
+
+/// Create a dummy RunFileRecord for retry tests (no real file needed).
+fn dummy_record(id: &str) -> RunFileRecord {
+    RunFileRecord {
+        id: id.to_string(),
+        profile: "Profile1".to_string(),
+        path: PathBuf::from("/fake/path.run"),
+        file_name: id.to_string(),
+        steam_id: "12345".to_string(),
+        size_bytes: 100,
+    }
+}
+
+#[test]
+fn retry_entry_starts_at_attempt_1() {
+    let entry = RetryEntry::new(dummy_record("r1"));
+    assert_eq!(entry.attempts, 1);
+    assert!(!entry.is_over_max_retries());
+}
+
+#[test]
+fn retry_entry_increment_increases_attempts() {
+    let mut entry = RetryEntry::new(dummy_record("r1"));
+    let before = entry.next_attempt;
+    entry.increment_attempt();
+    assert_eq!(entry.attempts, 2);
+    // next_attempt should have moved forward
+    assert!(entry.next_attempt > before);
+}
+
+#[test]
+fn retry_entry_exceeds_max_after_5() {
+    let mut entry = RetryEntry::new(dummy_record("r1"));
+    // Already at attempt 1, increment 4 more to reach 5
+    for _ in 0..4 {
+        entry.increment_attempt();
+    }
+    assert_eq!(entry.attempts, 5);
+    assert!(!entry.is_over_max_retries());
+
+    entry.increment_attempt();
+    assert_eq!(entry.attempts, 6);
+    assert!(entry.is_over_max_retries());
+}
+
+// ---- RetryQueue ----
+
+#[test]
+fn retry_queue_push_and_len() {
+    let mut q = RetryQueue::new();
+    assert!(q.is_empty());
+    q.push(dummy_record("r1"));
+    assert_eq!(q.len(), 1);
+    q.push(dummy_record("r2"));
+    assert_eq!(q.len(), 2);
+}
+
+#[test]
+fn retry_queue_drain_ready_returns_due_entries() {
+    let mut q = RetryQueue::new();
+    q.push(dummy_record("r1"));
+
+    // Entry just pushed has next_attempt = now + 1s, so not ready yet
+    let ready = q.drain_ready();
+    assert!(ready.is_empty());
+    assert_eq!(q.len(), 1);
+
+    // Sleep past the 1-second base delay
+    std::thread::sleep(Duration::from_millis(1100));
+
+    let ready = q.drain_ready();
+    assert_eq!(ready.len(), 1);
+    assert_eq!(ready[0].record.id, "r1");
+    assert!(q.is_empty());
+}
+
+#[test]
+fn retry_queue_repush_succeeds_within_max() {
+    let mut q = RetryQueue::new();
+    q.push(dummy_record("r1"));
+
+    std::thread::sleep(Duration::from_millis(1100));
+    let ready = q.drain_ready();
+    assert_eq!(ready.len(), 1);
+
+    // repush should succeed (attempt 1 -> 2, still under max 5)
+    let re_enqueued = q.repush(ready[0].clone());
+    assert!(re_enqueued);
+    assert_eq!(q.len(), 1);
+}
+
+#[test]
+fn retry_queue_repush_fails_after_max_retries() {
+    let mut q = RetryQueue::new();
+    let mut entry = RetryEntry::new(dummy_record("r1"));
+    // Artificially set attempts to MAX_RETRIES
+    for _ in 0..4 {
+        entry.increment_attempt();
+    }
+    assert_eq!(entry.attempts, 5);
+
+    // repush increments to 6, which exceeds max
+    let re_enqueued = q.repush(entry);
+    assert!(!re_enqueued);
+    assert!(q.is_empty());
 }
