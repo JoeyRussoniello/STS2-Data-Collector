@@ -8,4 +8,4 @@ RUN uv sync --no-dev --frozen 2>/dev/null || uv sync --no-dev
 
 COPY . .
 
-CMD ["sh", "-c", "exec uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["uv", "run", "python", "main.py"]
