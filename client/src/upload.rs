@@ -6,8 +6,10 @@ use serde_json::Value;
 
 use crate::record::RunFileRecord;
 
-const DEFAULT_BASE_URL: &str = "http://localhost:8000";
-const DEFAULT_API_KEY: &str = "change-me-in-production";
+const DEFAULT_BASE_URL: &str = "https://sts2-data-collector-production.up.railway.app";
+/// Baked in at compile time via `STS2_API_KEY=xxx cargo build --release`.
+/// Falls back to reading the env var at runtime if not set at compile time.
+const COMPILED_API_KEY: Option<&str> = option_env!("STS2_API_KEY");
 
 pub struct Uploader {
     client: Client,
@@ -20,7 +22,7 @@ impl Uploader {
         let base_url = std::env::var("STS2_SERVER_URL")
             .unwrap_or_else(|_| DEFAULT_BASE_URL.to_string());
         let api_key = std::env::var("STS2_API_KEY")
-            .unwrap_or_else(|_| DEFAULT_API_KEY.to_string());
+            .unwrap_or_else(|_| COMPILED_API_KEY.unwrap_or("").to_string());
         Self {
             client: Client::new(),
             base_url: base_url.trim_end_matches('/').to_string(),
@@ -31,7 +33,7 @@ impl Uploader {
     #[allow(dead_code)]
     pub fn with_base_url(base_url: &str) -> Self {
         let api_key = std::env::var("STS2_API_KEY")
-            .unwrap_or_else(|_| DEFAULT_API_KEY.to_string());
+            .unwrap_or_else(|_| COMPILED_API_KEY.unwrap_or("").to_string());
         Self {
             client: Client::new(),
             base_url: base_url.trim_end_matches('/').to_string(),
