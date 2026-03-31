@@ -22,6 +22,8 @@ The collector will:
 - Upload new completed `.run` files to the shared database
 - Hash Steam IDs before storage for your privacy!
 
+![Running Executable Image](./binary_image.png)
+
 **Why?**
 
 The big idea is to help make a public STS2 dataset so people can build stats pages, visualizations, dashboards, or modeling projects on top of it. Maybe we can quantitatively see how ass the Regent is lol.
