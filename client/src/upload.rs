@@ -11,23 +11,30 @@ const DEFAULT_BASE_URL: &str = "http://localhost:8000";
 pub struct Uploader {
     client: Client,
     base_url: String,
+    api_key: String,
 }
 
 impl Uploader {
     pub fn new() -> Self {
         let base_url = std::env::var("STS2_SERVER_URL")
             .unwrap_or_else(|_| DEFAULT_BASE_URL.to_string());
+        let api_key = std::env::var("STS2_API_KEY")
+            .unwrap_or_else(|_| String::new());
         Self {
             client: Client::new(),
             base_url: base_url.trim_end_matches('/').to_string(),
+            api_key,
         }
     }
 
     #[allow(dead_code)]
     pub fn with_base_url(base_url: &str) -> Self {
+        let api_key = std::env::var("STS2_API_KEY")
+            .unwrap_or_else(|_| String::new());
         Self {
             client: Client::new(),
             base_url: base_url.trim_end_matches('/').to_string(),
+            api_key,
         }
     }
 
@@ -56,6 +63,7 @@ impl Uploader {
         let response = self
             .client
             .post(&url)
+            .header("X-API-Key", &self.api_key)
             .json(&body)
             .send()
             .map_err(|e| io::Error::new(io::ErrorKind::ConnectionRefused, e.to_string()))?;
