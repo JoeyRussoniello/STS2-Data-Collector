@@ -5,9 +5,23 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
-# ── Requests ──
+REQUIRED_RUN_KEYS = {
+    "run_time",
+    "schema_version",
+    "seed",
+    "start_time",
+    "was_abandoned",
+    "win",
+    "acts",
+    "ascension",
+    "build_id",
+    "game_mode",
+    "killed_by_encounter",
+    "killed_by_event",
+    "map_point_history",
+}
 
 
 class RunUploadRequest(BaseModel):
@@ -17,10 +31,16 @@ class RunUploadRequest(BaseModel):
     file_size: int = Field(..., ge=0)
     data: dict[str, Any]
 
+    @field_validator("data")
+    @classmethod
+    def validate_run_data_keys(cls, v: dict[str, Any]) -> dict[str, Any]:
+        missing = REQUIRED_RUN_KEYS - v.keys()
+        if missing:
+            raise ValueError(f"Missing required .run data keys: {sorted(missing)}")
+        return v
 
-# ── Responses ──
 
-
+#* Responses
 class RunResponse(BaseModel):
     run_id: str
     steam_id_hash: str

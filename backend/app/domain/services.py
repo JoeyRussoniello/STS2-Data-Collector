@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from app.domain.models import RunRecord, hash_steam_id
 from app.domain.ports import RunRepository
+
+logger = logging.getLogger("sts2.service")
 
 
 class RunService:
@@ -35,7 +38,10 @@ class RunService:
         return await self._repo.upsert(record)
 
     async def get_run(self, run_id: str) -> RunRecord | None:
-        return await self._repo.get_by_run_id(run_id)
+        record = await self._repo.get_by_run_id(run_id)
+        if record is None:
+            logger.debug("Run not found: %s", run_id)
+        return record
 
     async def get_runs_for_player(
         self, steam_id: str, *, limit: int = 50, offset: int = 0
