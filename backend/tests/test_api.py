@@ -69,6 +69,7 @@ class TestApiKeyMiddleware:
         )
         assert resp.status_code == 401
 
+    @pytest.mark.golden
     def test_valid_api_key_passes_middleware(self, client):
         # This will fail at DB level (no real DB), but it should get past the 401
         resp = client.post(
@@ -93,6 +94,7 @@ class TestFileSizeLimit:
         assert resp.status_code == 413
         assert "exceeds maximum" in resp.json()["detail"]
 
+    @pytest.mark.golden
     def test_file_at_limit_not_rejected(self, client):
         try:
             resp = client.post(
