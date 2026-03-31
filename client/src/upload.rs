@@ -1,9 +1,6 @@
-use std::collections::HashMap;
 use std::fs;
 use std::io;
 
-use base64::Engine;
-use base64::engine::general_purpose::STANDARD as BASE64;
 use reqwest::blocking::Client;
 use serde_json::Value;
 
@@ -33,17 +30,15 @@ impl Uploader {
     }
 
     /// Upload a run record to the backend.
-    /// Reads the .run file, base64-encodes it, and PUTs it as JSON.
+    /// Reads the .run file (which is JSON), parses it, and PUTs it directly.
     pub fn upload_record(&self, record: &RunFileRecord) -> io::Result<()> {
-        let raw_bytes = fs::read(&record.path)?;
-        let encoded = BASE64.encode(&raw_bytes);
-
-        let mut data = HashMap::new();
-        data.insert("raw_base64", Value::String(encoded));
-        data.insert(
-            "file_size_bytes",
-            Value::Number(record.size_bytes.into()),
-        );
+        let raw = fs::read_to_string(&record.path)?;
+        let data: Value = serde_json::from_str(&raw).map_err(|e| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("Failed to parse .run file as JSON: {e}"),
+            )
+        })?;
 
         let body = serde_json::json!({
             "steam_id": record.steam_id,

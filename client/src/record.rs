@@ -28,9 +28,9 @@ impl RunFileRecord {
     }
 }
 
-/// Extract the final component of a path as a String.
+/// Extract the final component of a path as a String, stripping the `.run` extension.
 pub fn file_name_string(path: &Path) -> io::Result<String> {
-    path.file_name()
+    path.file_stem()
         .and_then(|name| name.to_str())
         .map(|s| s.to_string())
         .ok_or_else(|| {

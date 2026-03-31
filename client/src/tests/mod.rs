@@ -102,7 +102,7 @@ fn get_profile_dirs_none_found() {
 #[test]
 fn file_name_string_works() {
     let s = file_name_string(Path::new("/a/b/myfile.txt")).unwrap();
-    assert_eq!(s, "myfile.txt");
+    assert_eq!(s, "myfile");
 }
 
 #[test]
@@ -127,8 +127,8 @@ fn get_run_files_finds_only_run_extension() {
     let files = get_run_files_for_profile(tmp.path()).unwrap();
     assert_eq!(files.len(), 2);
     let names: HashSet<_> = files.iter().map(|f| file_name_string(f).unwrap()).collect();
-    assert!(names.contains("game1.run"));
-    assert!(names.contains("game2.RUN"));
+    assert!(names.contains("game1"));
+    assert!(names.contains("game2"));
 }
 
 #[test]
@@ -162,8 +162,8 @@ fn record_from_file_captures_fields() {
     let record = RunFileRecord::from_file("12345", "Profile1", &run).unwrap();
     assert_eq!(record.steam_id, "12345");
     assert_eq!(record.profile, "Profile1");
-    assert_eq!(record.file_name, "game1.run");
-    assert_eq!(record.id, "12345:Profile1:game1.run");
+    assert_eq!(record.file_name, "game1");
+    assert_eq!(record.id, "12345:Profile1:game1");
     assert_eq!(record.size_bytes, "some run data".len() as u64);
     assert_eq!(record.path, run);
 }
@@ -256,9 +256,9 @@ fn discover_finds_runs_across_profiles() {
 
     assert_eq!(records.len(), 3);
     let ids: HashSet<_> = records.iter().map(|r| r.id.clone()).collect();
-    assert!(ids.contains("7654321:Profile1:r1.run"));
-    assert!(ids.contains("7654321:Profile1:r2.run"));
-    assert!(ids.contains("7654321:Profile2:r3.run"));
+    assert!(ids.contains("7654321:Profile1:r1"));
+    assert!(ids.contains("7654321:Profile1:r2"));
+    assert!(ids.contains("7654321:Profile2:r3"));
 }
 
 #[test]
@@ -296,7 +296,7 @@ fn discover_skips_non_profile_dirs() {
     unsafe { env::remove_var("STS2_BASE_DIR") };
 
     assert_eq!(records.len(), 1);
-    assert_eq!(records[0].file_name, "g.run");
+    assert_eq!(records[0].file_name, "g");
 }
 
 // ---- watcher integration ----
@@ -368,13 +368,13 @@ fn watcher_handles_multiple_dirs() {
         match rx.recv_timeout(Duration::from_secs(10)) {
             Ok(RunEvent::NewRunFile(p)) => {
                 seen.insert(file_name_string(&p).unwrap());
-                if seen.contains("a.run") && seen.contains("b.run") {
+                if seen.contains("a") && seen.contains("b") {
                     break;
                 }
             }
             Err(_) => break,
         }
     }
-    assert!(seen.contains("a.run"), "missing event from first dir");
-    assert!(seen.contains("b.run"), "missing event from second dir");
+    assert!(seen.contains("a"), "missing event from first dir");
+    assert!(seen.contains("b"), "missing event from second dir");
 }
