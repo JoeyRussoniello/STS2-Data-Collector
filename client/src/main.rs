@@ -5,10 +5,12 @@ mod upload;
 mod watcher;
 
 use std::io;
+use std::sync::mpsc;
 
 use crate::discovery::{discover_existing_run_records, discover_save_dirs, get_sts2_base_dir};
-use crate::record::RunFileRecord;
+use crate::record::{parse_run_path, RunFileRecord};
 use crate::state::ClientState;
+use crate::watcher::{start_watchers, RunEvent};
 
 fn main() {
     if let Err(err) = run() {
@@ -41,9 +43,44 @@ fn run() -> io::Result<()> {
     let save_dirs = discover_save_dirs()?;
     println!("Watching {} history dir(s) for new runs…", save_dirs.len());
 
-    // TODO: start_watchers(&save_dirs, tx)?;
-    // TODO: run_event_loop(rx, &mut state)?;
+    // --- start filesystem watchers ---
+    let (tx, rx) = mpsc::channel();
+    let _watchers = start_watchers(&save_dirs, tx)?;
 
+    // --- event loop: process new .run files as they appear ---
+    run_event_loop(rx, &mut state)
+}
+
+/// Block forever, processing incoming `.run` file events.
+fn run_event_loop(
+    rx: mpsc::Receiver<RunEvent>,
+    state: &mut ClientState,
+) -> io::Result<()> {
+    for event in rx {
+        match event {
+            RunEvent::NewRunFile(path) => {
+                let (steam_id, profile) = match parse_run_path(&path) {
+                    Ok(ids) => ids,
+                    Err(err) => {
+                        eprintln!("Skipping {}: {err}", path.display());
+                        continue;
+                    }
+                };
+
+                let record = RunFileRecord::from_file(&steam_id, &profile, &path)?;
+
+                if state.contains(&record.id) {
+                    continue;
+                }
+
+                println!("New run detected: {}", record.id);
+                // TODO: upload_record(&record)?;
+                state.mark_uploaded(record.id)?;
+            }
+        }
+    }
+
+    // Channel closed — all watchers dropped.
     Ok(())
 }
 

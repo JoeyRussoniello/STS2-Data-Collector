@@ -1,10 +1,13 @@
 use crate::discovery::*;
 use crate::record::*;
 use crate::state::ClientState;
+use crate::watcher::{start_watchers, RunEvent};
 use std::collections::HashSet;
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::mpsc;
+use std::time::Duration;
 use tempfile::TempDir;
 
 /// Helper: build the full directory tree that discover_and_hash_runs expects
@@ -294,4 +297,84 @@ fn discover_skips_non_profile_dirs() {
 
     assert_eq!(records.len(), 1);
     assert_eq!(records[0].file_name, "g.run");
+}
+
+// ---- watcher integration ----
+
+#[test]
+fn watcher_detects_new_run_file() {
+    let tmp = TempDir::new().unwrap();
+    let history = tmp.path().join("saves").join("history");
+    fs::create_dir_all(&history).unwrap();
+
+    let (tx, rx) = mpsc::channel();
+    let _watchers = start_watchers(&[history.clone()], tx).unwrap();
+
+    // Give the watcher a moment to start
+    std::thread::sleep(Duration::from_millis(200));
+
+    // Drop a new .run file into the watched directory
+    fs::write(history.join("new_game.run"), "run-data").unwrap();
+
+    // Wait for the event (with timeout so the test doesn't hang)
+    let event = rx.recv_timeout(Duration::from_secs(10));
+    assert!(event.is_ok(), "expected a RunEvent but got timeout");
+    match event.unwrap() {
+        RunEvent::NewRunFile(path) => {
+            assert!(path.ends_with("new_game.run"));
+        }
+    }
+}
+
+#[test]
+fn watcher_ignores_non_run_files() {
+    let tmp = TempDir::new().unwrap();
+    let history = tmp.path().join("saves").join("history");
+    fs::create_dir_all(&history).unwrap();
+
+    let (tx, rx) = mpsc::channel();
+    let _watchers = start_watchers(&[history.clone()], tx).unwrap();
+
+    std::thread::sleep(Duration::from_millis(200));
+
+    // Write a non-.run file — should NOT produce an event
+    fs::write(history.join("notes.txt"), "not a run").unwrap();
+
+    let event = rx.recv_timeout(Duration::from_secs(3));
+    assert!(event.is_err(), "should not have received event for .txt file");
+}
+
+#[test]
+fn watcher_handles_multiple_dirs() {
+    let tmp = TempDir::new().unwrap();
+    let h1 = tmp.path().join("profile1").join("saves").join("history");
+    let h2 = tmp.path().join("profile2").join("saves").join("history");
+    fs::create_dir_all(&h1).unwrap();
+    fs::create_dir_all(&h2).unwrap();
+
+    let (tx, rx) = mpsc::channel();
+    let _watchers = start_watchers(&[h1.clone(), h2.clone()], tx).unwrap();
+
+    std::thread::sleep(Duration::from_millis(500));
+
+    fs::write(h1.join("a.run"), "data").unwrap();
+    // Small delay so the OS has time to emit events for each write separately
+    std::thread::sleep(Duration::from_millis(500));
+    fs::write(h2.join("b.run"), "data").unwrap();
+
+    let mut seen = HashSet::new();
+    // Drain events — a single write may produce both Create and Modify events
+    loop {
+        match rx.recv_timeout(Duration::from_secs(10)) {
+            Ok(RunEvent::NewRunFile(p)) => {
+                seen.insert(file_name_string(&p).unwrap());
+                if seen.contains("a.run") && seen.contains("b.run") {
+                    break;
+                }
+            }
+            Err(_) => break,
+        }
+    }
+    assert!(seen.contains("a.run"), "missing event from first dir");
+    assert!(seen.contains("b.run"), "missing event from second dir");
 }
