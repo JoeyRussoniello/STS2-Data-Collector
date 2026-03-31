@@ -1,5 +1,10 @@
 # STS2 Data Collector
 
+[![Release](https://img.shields.io/github/v/release/JoeyRussoniello/STS2-Data-Collector?style=flat-square)](https://github.com/JoeyRussoniello/STS2-Data-Collector/releases/latest)
+[![CI](https://img.shields.io/github/actions/workflow/status/JoeyRussoniello/STS2-Data-Collector/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/JoeyRussoniello/STS2-Data-Collector/actions/workflows/ci.yml)
+[![API Docs](https://img.shields.io/badge/API%20Docs-Swagger-blue?style=flat-square&logo=swagger)](https://sts2-data-collector-production.up.railway.app/docs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+
 Automatically upload your [Slay the Spire 2](https://store.steampowered.com/app/2868840/Slay_the_Spire_2/) run data to help build community analytics. The collector runs quietly in the background and uploads completed runs as you play.
 
 ![alt text](binary_image.png)
@@ -59,7 +64,7 @@ All collected run data is available through a free, read-only API. No authentica
 
 ### List all runs
 
-```
+```bash
 GET /api/runs?limit=50&offset=0
 ```
 
@@ -91,11 +96,15 @@ GET /api/runs?limit=50&offset=0
 
 ### Get a single run
 
-```
+```bash
 GET /api/runs/{run_id}
 ```
 
 Returns a single run object, or `404` if not found. The `run_id` format is `steam_id_hash:profile:file_name`.
+
+> Full Public API Documentation Available here: [Swagger Docs](https://sts2-data-collector-production.up.railway.app/docs#/public)
+>
+> **NOTE**: Apis not under the "public" banner section require an API key, only the /public methods are completely open.
 
 ### Example usage
 
