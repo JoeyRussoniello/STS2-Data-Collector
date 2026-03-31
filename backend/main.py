@@ -1,7 +1,6 @@
 import uvicorn
-from fastapi import FastAPI
-
 from app.api.routes import health, runs
+from fastapi import FastAPI
 
 app = FastAPI(title="STS2 Data Collector", version="0.1.0")
 

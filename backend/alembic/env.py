@@ -1,14 +1,12 @@
 import asyncio
 from logging.config import fileConfig
 
-from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import async_engine_from_config
-
 from alembic import context
-
 from app.adapters.postgres.database import Base
 from app.adapters.postgres.models import RunRow  # noqa: F401 — registers table
 from app.config import settings
+from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import async_engine_from_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -68,9 +66,7 @@ def run_migrations_online() -> None:
         await connectable.dispose()
 
     def do_run_migrations(connection):
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
 
