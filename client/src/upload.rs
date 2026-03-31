@@ -15,9 +15,11 @@ pub struct Uploader {
 
 impl Uploader {
     pub fn new() -> Self {
+        let base_url = std::env::var("STS2_SERVER_URL")
+            .unwrap_or_else(|_| DEFAULT_BASE_URL.to_string());
         Self {
             client: Client::new(),
-            base_url: DEFAULT_BASE_URL.to_string(),
+            base_url: base_url.trim_end_matches('/').to_string(),
         }
     }
 
