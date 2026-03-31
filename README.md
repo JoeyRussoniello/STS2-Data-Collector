@@ -5,60 +5,32 @@
 [![API Docs](https://img.shields.io/badge/API%20Docs-Swagger-blue?style=flat-square&logo=swagger)](https://sts2-data-collector-production.up.railway.app/docs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-Automatically upload your [Slay the Spire 2](https://store.steampowered.com/app/2868840/Slay_the_Spire_2/) run data to help build community analytics. The collector runs quietly in the background and uploads completed runs as you play.
+I’m a Slay the Spire data nerd, and to my knowledge there isn’t a public STS2 dataset yet :(
 
-![alt text](binary_image.png)
+A while back, I worked on a project using ~126k human STS1 runs (from a dev dump) and modeled win chance over time. It was super fun, and it made me realize how much interesting stuff depends on just having enough public run data in the first place.
 
-## Installation
+So I made this for STS2!
 
-1. Go to the [Releases](../../releases/latest) page
-2. Download the file for your platform:
-   - **Windows:** `sts2-collector-windows-x64.exe`
-   - **macOS (Apple Silicon):** `sts2-collector-macos-arm64`
-   - **Linux:** `sts2-collector-linux-x64`
-3. Place it anywhere convenient (e.g. your Desktop or a `tools/` folder)
+**Contributing to the dataset is super easy:**
 
-**macOS / Linux only:** make the file executable first:
-
-```sh
-chmod +x sts2-collector-*
-```
-
-## Usage
-
-Double-click the executable (or run it from a terminal). That's it.
+1. [Download the latest release](https://github.com/JoeyRussoniello/STS2-Data-Collector/releases)
+2. Run the executable on your machine
 
 The collector will:
 
-- Automatically find your STS2 save directory
-- Upload any completed runs it hasn't seen before
-- Watch for new runs and upload them as you play
-- Retry failed uploads automatically
+- Find your STS2 save folder automatically
+- Upload new completed `.run` files to the shared database
+- Hash Steam IDs before storage for your privacy!
 
-To stop, press `q` + Enter in the terminal window.
+**Why?**
 
-### Troubleshooting
+The big idea is to help make a public STS2 dataset so people can build stats pages, visualizations, dashboards, or modeling projects on top of it. Maybe we can quantitatively see how ass the Regent is lol.
 
-If the collector can't find your save directory, you can point it manually:
-
-```sh
-# Windows (PowerShell)
-$env:STS2_BASE_DIR = "C:\path\to\SteamLibrary\steamapps\common\Slay the Spire 2"
-.\sts2-collector-windows-x64.exe
-
-# macOS / Linux
-STS2_BASE_DIR="/path/to/Slay the Spire 2" ./sts2-collector-linux-x64
-```
-
-## Privacy
-
-- Your Steam ID is hashed before storage, it is never stored in plain text
-- Only `.run` file data is uploaded (game results, not personal information)
-- Uploads are deduplicated so the same run is never sent twice
+---
 
 ## Public API
 
-All collected run data is available through a free, read-only API. No authentication required.
+I’ve also built a minimal, completely free, read-only API for analysis, so anybody can access this run data and do their own analysis. [API Docs here](https://sts2-data-collector-production.up.railway.app/docs#/public)
 
 **Base URL:** `https://sts2-data-collector-production.up.railway.app`
 
@@ -102,9 +74,9 @@ GET /api/runs/{run_id}
 
 Returns a single run object, or `404` if not found. The `run_id` format is `steam_id_hash:profile:file_name`.
 
-> Full Public API Documentation Available here: [Swagger Docs](https://sts2-data-collector-production.up.railway.app/docs#/public)
+> Full Public API Documentation: [Swagger Docs](https://sts2-data-collector-production.up.railway.app/docs#/public)
 >
-> **NOTE**: Apis not under the "public" banner section require an API key, only the /public methods are completely open.
+> **NOTE**: Only the `/api/runs` endpoints are open to the public. Other endpoints require an API key.
 
 ### Example usage
 
@@ -123,3 +95,26 @@ print(f"{len(wins)} wins out of {len(runs)} runs")
 ### Rate limits
 
 Public endpoints are limited to **30 requests per minute** per IP address.
+
+---
+
+## Privacy
+
+- Your Steam ID is hashed before storage (never stored in plain text)
+- Only `.run` file data is uploaded (game results, not personal info)
+- Uploads are deduplicated so the same run is never sent twice
+
+---
+
+## Feedback & Contributing
+
+Would love feedback on:
+
+- What stats people would actually care about (I’m looking to build a public analytics frontend too, so this would be helpful!)
+- Whether this is something you’d use or contribute to
+
+Open an issue or PR, or just reach out!
+
+---
+
+*Not affiliated with Mega Crit at all, just trying to help make STS2 data projects easier/possible!*
