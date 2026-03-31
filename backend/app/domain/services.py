@@ -16,7 +16,6 @@ class RunService:
     async def upload_run(
         self,
         *,
-        run_id: str,
         steam_id: str,
         profile: str,
         file_name: str,
@@ -24,6 +23,7 @@ class RunService:
         data: dict[str, Any],
     ) -> RunRecord:
         steam_id_hash = hash_steam_id(steam_id, self._salt)
+        run_id = f"{steam_id_hash}:{profile}:{file_name}"
         record = RunRecord(
             run_id=run_id,
             steam_id_hash=steam_id_hash,

@@ -11,14 +11,12 @@ from app.domain.services import RunService
 router = APIRouter(prefix="/runs", tags=["runs"])
 
 
-@router.put("/{run_id}")
+@router.post("/")
 async def upload_run(
-    run_id: str,
     body: RunUploadRequest,
     svc: RunService = Depends(get_run_service),
 ) -> RunResponse:
     record = await svc.upload_run(
-        run_id=run_id,
         steam_id=body.steam_id,
         profile=body.profile,
         file_name=body.file_name,

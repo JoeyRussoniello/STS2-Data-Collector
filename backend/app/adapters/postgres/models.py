@@ -26,4 +26,11 @@ class RunRow(Base):
 
     __table_args__ = (
         Index("ix_runs_steam_id_hash", "steam_id_hash"),
+        Index(
+            "uq_runs_steam_profile_file",
+            "steam_id_hash",
+            "profile",
+            "file_name",
+            unique=True,
+        ),
     )

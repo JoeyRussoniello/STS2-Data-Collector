@@ -26,8 +26,9 @@ class PostgresRunRepository(RunRepository):
             uploaded_at=record.uploaded_at,
         )
         stmt = stmt.on_conflict_do_update(
-            index_elements=[RunRow.run_id],
+            index_elements=["steam_id_hash", "profile", "file_name"],
             set_={
+                "run_id": stmt.excluded.run_id,
                 "data": stmt.excluded.data,
                 "file_size": stmt.excluded.file_size,
                 "uploaded_at": stmt.excluded.uploaded_at,

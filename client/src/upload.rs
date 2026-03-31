@@ -32,7 +32,8 @@ impl Uploader {
     }
 
     /// Upload a run record to the backend.
-    /// Reads the .run file (which is JSON), parses it, and PUTs it directly.
+    /// Reads the .run file (which is JSON), parses it, and POSTs it.
+    /// The server generates the global run_id from the hashed steam_id.
     pub fn upload_record(&self, record: &RunFileRecord) -> io::Result<()> {
         let raw = fs::read_to_string(&record.path)?;
         let data: Value = serde_json::from_str(&raw).map_err(|e| {
@@ -50,11 +51,11 @@ impl Uploader {
             "data": data,
         });
 
-        let url = format!("{}/runs/{}", self.base_url, record.id);
+        let url = format!("{}/runs", self.base_url);
 
         let response = self
             .client
-            .put(&url)
+            .post(&url)
             .json(&body)
             .send()
             .map_err(|e| io::Error::new(io::ErrorKind::ConnectionRefused, e.to_string()))?;

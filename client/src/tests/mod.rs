@@ -163,7 +163,7 @@ fn record_from_file_captures_fields() {
     assert_eq!(record.steam_id, "12345");
     assert_eq!(record.profile, "Profile1");
     assert_eq!(record.file_name, "game1");
-    assert_eq!(record.id, "12345:Profile1:game1");
+    assert_eq!(record.id, "Profile1:game1");
     assert_eq!(record.size_bytes, "some run data".len() as u64);
     assert_eq!(record.path, run);
 }
@@ -256,9 +256,9 @@ fn discover_finds_runs_across_profiles() {
 
     assert_eq!(records.len(), 3);
     let ids: HashSet<_> = records.iter().map(|r| r.id.clone()).collect();
-    assert!(ids.contains("7654321:Profile1:r1"));
-    assert!(ids.contains("7654321:Profile1:r2"));
-    assert!(ids.contains("7654321:Profile2:r3"));
+    assert!(ids.contains("Profile1:r1"));
+    assert!(ids.contains("Profile1:r2"));
+    assert!(ids.contains("Profile2:r3"));
 }
 
 #[test]

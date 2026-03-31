@@ -16,7 +16,7 @@ impl RunFileRecord {
     pub fn from_file(steam_id: &str, profile: &str, run_file: &PathBuf) -> io::Result<Self> {
         let size_bytes = run_file.metadata()?.len();
         let run_id = file_name_string(run_file)?;
-        let id = format!("{steam_id}:{profile}:{run_id}");
+        let id = format!("{profile}:{run_id}");
         Ok(Self {
             id,
             profile: profile.to_string(),
