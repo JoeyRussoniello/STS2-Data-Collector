@@ -1,4 +1,5 @@
 import hmac
+import os
 
 import uvicorn
 from app.api.routes import health, runs
@@ -8,9 +9,7 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI(title="STS2 Data Collector", version="0.1.0")
 
-# Paths that don't require an API key
 PUBLIC_PATHS = {"/health", "/docs", "/openapi.json", "/redoc"}
-
 
 @app.middleware("http")
 async def verify_api_key(request: Request, call_next):
@@ -23,11 +22,9 @@ async def verify_api_key(request: Request, call_next):
 
     return await call_next(request)
 
-
 app.include_router(health.router)
 app.include_router(runs.router)
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 8080))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=port)

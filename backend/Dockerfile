@@ -3,9 +3,12 @@ FROM python:3.13-slim
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
+
 COPY pyproject.toml uv.lock* ./
 RUN uv sync --no-dev --frozen 2>/dev/null || uv sync --no-dev
 
 COPY . .
 
-CMD ["uv", "run", "python", "main.py"]
+ENV PATH="/app/.venv/bin:$PATH"
+
+CMD ["python", "main.py"]
