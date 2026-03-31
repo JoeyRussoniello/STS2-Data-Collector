@@ -52,3 +52,10 @@ class RunService:
         )
         total = await self._repo.count_by_steam_id_hash(steam_id_hash)
         return runs, total
+
+    async def list_runs(
+        self, *, limit: int = 50, offset: int = 0
+    ) -> tuple[list[RunRecord], int]:
+        runs = await self._repo.list_all(limit=limit, offset=offset)
+        total = await self._repo.count_all()
+        return runs, total

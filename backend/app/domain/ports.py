@@ -25,3 +25,13 @@ class RunRepository(abc.ABC):
     @abc.abstractmethod
     async def count_by_steam_id_hash(self, steam_id_hash: str) -> int:
         """Count total runs for a hashed Steam ID."""
+
+    @abc.abstractmethod
+    async def list_all(
+        self, *, limit: int = 50, offset: int = 0
+    ) -> list[RunRecord]:
+        """Fetch all runs, newest first."""
+
+    @abc.abstractmethod
+    async def count_all(self) -> int:
+        """Count total runs in the database."""

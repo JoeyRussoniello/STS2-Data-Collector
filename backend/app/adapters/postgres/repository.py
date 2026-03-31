@@ -64,6 +64,23 @@ class PostgresRunRepository(RunRepository):
         result = await self._session.execute(stmt)
         return result.scalar_one()
 
+    async def list_all(
+        self, *, limit: int = 50, offset: int = 0
+    ) -> list[RunRecord]:
+        stmt = (
+            select(RunRow)
+            .order_by(RunRow.uploaded_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        result = await self._session.execute(stmt)
+        return [_to_domain(row) for row in result.scalars()]
+
+    async def count_all(self) -> int:
+        stmt = select(func.count()).select_from(RunRow)
+        result = await self._session.execute(stmt)
+        return result.scalar_one()
+
 
 def _to_domain(row: RunRow) -> RunRecord:
     return RunRecord(
