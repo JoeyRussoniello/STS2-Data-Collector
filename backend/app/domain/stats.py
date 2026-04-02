@@ -1,4 +1,7 @@
-"""Stats business logic — depends only on domain ports, never on adapters."""
+"""Stats business logic depends only on domain ports, never on adapters."""
+
+# NOTE: Lots of signature duplication between StatsService and StatsRepository.
+# This design decision may be re-evaluated if it becomes a burden
 
 from __future__ import annotations
 
@@ -21,7 +24,9 @@ class StatsService:
         return hash_steam_id(steam_id, self._salt)
 
     async def get_overview(
-        self, *, steam_id: str | None = None,
+        self,
+        *,
+        steam_id: str | None = None,
     ) -> dict:
         return await self._repo.get_overview(
             steam_id_hash=self._hash_optional(steam_id),
