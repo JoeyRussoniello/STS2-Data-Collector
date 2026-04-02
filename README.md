@@ -76,6 +76,22 @@ GET /api/runs/{run_id}
 
 Returns a single run object, or `404` if not found. The `run_id` format is `steam_id_hash:profile:file_name`.
 
+### Analytics endpoints
+
+```bash
+GET /api/stats/summary
+GET /api/stats/character-win-rates
+GET /api/stats/top-cards?limit=20&min_appearances=10
+GET /api/stats/daily-trends?days=14
+```
+
+These return:
+
+- High-level totals (`summary`)
+- Win rates grouped by character
+- Card power leaderboard (win rate with sample-size floor)
+- Recent daily trend points (runs + win rate)
+
 > Full Public API Documentation: [Swagger Docs](https://sts2-data-collector-production.up.railway.app/docs#/public)
 >
 > **NOTE**: Only the `/api/runs` endpoints are open to the public. Other endpoints require an API key.
@@ -97,6 +113,23 @@ print(f"{len(wins)} wins out of {len(runs)} runs")
 ### Rate limits
 
 Public endpoints are limited to **30 requests per minute** per IP address.
+
+---
+
+## Frontend dashboard (Flask)
+
+A new minimal dashboard lives in `frontend/` and consumes `/api/stats/*`.
+
+```powershell
+cd frontend
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+$env:STS2_BACKEND_URL="http://localhost:8080"
+python app.py
+```
+
+Then open `http://localhost:5000`.
 
 ---
 
