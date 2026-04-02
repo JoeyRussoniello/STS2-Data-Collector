@@ -9,7 +9,17 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from app.api.dependencies import get_run_service
-from app.api.schemas import RunListResponse, RunResponse, RunUploadRequest
+from app.api.schemas import (
+    CardResponse,
+    MapPointResponse,
+    ProcessedRunResponse,
+    RelicResponse,
+    RunDataResponse,
+    RunListResponse,
+    RunPlayerResponse,
+    RunResponse,
+    RunUploadRequest,
+)
 from app.domain.services import RunService
 
 logger = logging.getLogger("sts2.runs")
@@ -19,6 +29,33 @@ router = APIRouter(prefix="/runs", tags=["runs"])
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 limiter = Limiter(key_func=get_remote_address)
+
+
+def _to_processed_response(processed) -> ProcessedRunResponse:
+    return ProcessedRunResponse(
+        run_data=RunDataResponse(**processed.run_data.model_dump()),
+        players=[
+            RunPlayerResponse(**player.model_dump()) for player in processed.players
+        ],
+        cards=[
+            CardResponse(
+                run_player_id=card.run_player_id,
+                id=card.id,
+                floor_added_to_deck=card.floor_added_to_deck,
+                current_upgrade_level=card.current_upgrade_level,
+                enchantment=(
+                    card.enchantment.model_dump()
+                    if card.enchantment is not None
+                    else None
+                ),
+            )
+            for card in processed.cards
+        ],
+        relics=[RelicResponse(**relic.model_dump()) for relic in processed.relics],
+        map_points=[
+            MapPointResponse(**point.model_dump()) for point in processed.map_points
+        ],
+    )
 
 
 @router.post("")
@@ -42,7 +79,10 @@ async def upload_run(
     )
     logger.info(
         "Uploaded run=%s profile=%s file=%s size=%d",
-        record.run_id, record.profile, record.file_name, record.file_size,
+        record.run_id,
+        record.profile,
+        record.file_name,
+        record.file_size,
     )
     return RunResponse(
         run_id=record.run_id,
@@ -72,6 +112,17 @@ async def get_run(
         data=record.data,
         uploaded_at=record.uploaded_at,
     )
+
+
+@router.get("/{run_id}/processed")
+async def get_processed_run(
+    run_id: str,
+    svc: RunService = Depends(get_run_service),
+) -> ProcessedRunResponse:
+    processed = await svc.get_processed_run(run_id)
+    if processed is None:
+        raise HTTPException(status_code=404, detail="Run not found")
+    return _to_processed_response(processed)
 
 
 @router.get("/by-player/{steam_id}")

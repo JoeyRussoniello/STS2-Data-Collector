@@ -1,9 +1,8 @@
 """Tests for schema validation, API key middleware, file size limits, and CORS."""
 
 import pytest
-from pydantic import ValidationError
-
 from app.api.schemas import REQUIRED_RUN_KEYS, RunUploadRequest
+from pydantic import ValidationError
 
 
 def _valid_data() -> dict:
@@ -22,6 +21,7 @@ def _valid_data() -> dict:
         "killed_by_encounter": "ENCOUNTER.THE_INSATIABLE_BOSS",
         "killed_by_event": "NONE.NONE",
         "map_point_history": [],
+        "players": [],
     }
 
 
@@ -70,9 +70,19 @@ class TestRunUploadRequestValidation:
 
     def test_all_required_keys_present_in_constant(self):
         expected = {
-            "run_time", "schema_version", "seed", "start_time",
-            "was_abandoned", "win", "acts", "ascension", "build_id",
-            "game_mode", "killed_by_encounter", "killed_by_event",
+            "run_time",
+            "schema_version",
+            "seed",
+            "start_time",
+            "was_abandoned",
+            "win",
+            "acts",
+            "ascension",
+            "build_id",
+            "game_mode",
+            "killed_by_encounter",
+            "killed_by_event",
             "map_point_history",
+            "players",
         }
         assert REQUIRED_RUN_KEYS == expected

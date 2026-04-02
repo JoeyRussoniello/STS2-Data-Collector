@@ -1,45 +1,51 @@
 name: CI
 
 on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-    client-test:
-        name: Client Tests
-        runs-on: windows-latest
-        steps:
-            - uses: actions/checkout@v4
+  client-test:
+    name: Client Tests
+    runs-on: windows-latest
+    if: >
+      github.event_name == 'push' && contains(join(github.event.commits.*.modified, '\n'), 'client/') ||
+      github.event_name == 'pull_request' && contains(join(github.event.pull_request.changed_files, '\n'), 'client/')
+    steps:
+      - uses: actions/checkout@v4
 
-            - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@stable
 
-            - uses: Swatinem/rust-cache@v2
-              with:
-                  workspaces: client
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: client
 
-            - name: Run tests
-              working-directory: client
-              run: cargo test --verbose
+      - name: Run tests
+        working-directory: client
+        run: cargo test --verbose
 
-    backend-test:
-        name: Backend Tests
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'push' && contains(join(github.event.commits.*.modified, '\n'), 'backend/') ||
+      github.event_name == 'pull_request' && contains(join(github.event.pull_request.changed_files, '\n'), 'backend/')
+    steps:
+      - uses: actions/checkout@v4
 
-            - uses: astral-sh/setup-uv@v4
-              with:
-                  version: "latest"
+      - uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
 
-            - name: Set up Python
-              run: uv python install 3.13
+      - name: Set up Python
+        run: uv python install 3.13
 
-            - name: Install dependencies
-              working-directory: backend
-              run: uv sync --dev
+      - name: Install dependencies
+        working-directory: backend
+        run: uv sync --dev
 
-            - name: Run tests
-              working-directory: backend
-              run: uv run pytest tests/ -v -m "not golden"
+      - name: Run tests
+        working-directory: backend
+        run: uv run pytest tests/ -v -m "not golden"
