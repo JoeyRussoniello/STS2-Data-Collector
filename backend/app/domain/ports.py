@@ -5,12 +5,17 @@ from __future__ import annotations
 import abc
 
 from app.domain.models import RunRecord
+from app.domain.runs import ProcessedRun
 
 
 class RunRepository(abc.ABC):
     @abc.abstractmethod
-    async def upsert(self, record: RunRecord) -> RunRecord:
+    async def upsert(self, record: RunRecord, processed_run: ProcessedRun) -> RunRecord:
         """Insert or update a run record. Returns the persisted record."""
+
+    @abc.abstractmethod
+    async def get_processed_by_run_id(self, run_id: str) -> ProcessedRun | None:
+        """Fetch normalized records for one run, or None if missing."""
 
     @abc.abstractmethod
     async def get_by_run_id(self, run_id: str) -> RunRecord | None:

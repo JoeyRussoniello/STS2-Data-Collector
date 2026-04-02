@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class RunData(BaseModel):
-    """Flat run metadata — one row per run in the DB."""
+    """Flat run metadata. One row per run in the DB."""
 
     run_id: str
     win: bool
@@ -15,7 +15,7 @@ class RunData(BaseModel):
     run_time: int
     ascension: int
     game_mode: str
-    modifiers: list[str] = []
+    modifiers: list[str] = Field(default_factory=list)
     start_time: int
     was_abandoned: bool
     schema_version: int
