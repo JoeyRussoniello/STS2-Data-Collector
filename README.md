@@ -5,162 +5,6 @@
 [![API Docs](https://img.shields.io/badge/API%20Docs-Swagger-blue?style=flat-square&logo=swagger)](https://sts2-data-collector-production.up.railway.app/docs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-I’m a Slay the Spire data nerd, and to my knowledge there isn’t a public STS2 dataset yet :(
-
-A while back, I worked on a project using ~126k human STS1 runs (from a dev dump) and modeled win chance over time. It was super fun, and it made me realize how much interesting stuff depends on just having enough public run data in the first place.
-
-So I made this for STS2!
-
-**Contributing to the dataset is super easy:**
-
-1. [Download the latest release](https://github.com/JoeyRussoniello/STS2-Data-Collector/releases)
-2. Run the executable on your machine
-
-The collector will:
-
-- Find your STS2 save folder automatically
-- Upload new completed `.run` files to the shared database
-- Hash Steam IDs before storage for your privacy!
-
-![Running Executable Image](./binary_image.png)
-
-**Why?**
-
-The big idea is to help make a public STS2 dataset so people can build stats pages, visualizations, dashboards, or modeling projects on top of it. Maybe we can quantitatively see how ass the Regent is lol.
-
----
-
-## Public API
-
-I’ve also built a minimal, completely free, read-only API for analysis, so anybody can access this run data and do their own analysis. [API Docs here](https://sts2-data-collector-production.up.railway.app/docs#/public)
-
-**Base URL:** `https://sts2-data-collector-production.up.railway.app`
-
-### List all runs
-
-```bash
-GET /api/runs?limit=50&offset=0
-```
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `limit` | int | 50 | Results per page (1–200) |
-| `offset` | int | 0 | Number of results to skip |
-
-**Response:**
-
-```json
-{
-  "runs": [
-    {
-      "run_id": "abc123:Profile1:run_001",
-      "steam_id_hash": "abc123...",
-      "profile": "Profile1",
-      "file_name": "run_001",
-      "file_size": 4096,
-      "data": { "win": true, "ascension": 5, "acts": [...], ... },
-      "uploaded_at": "2026-03-31T12:00:00Z"
-    }
-  ],
-  "total": 1542,
-  "limit": 50,
-  "offset": 0
-}
-```
-
-### Get a single run
-
-```bash
-GET /api/runs/{run_id}
-```
-
-Returns a single run object, or `404` if not found. The `run_id` format is `steam_id_hash:profile:file_name`.
-
-### Analytics endpoints
-
-```bash
-GET /api/stats/summary
-GET /api/stats/character-win-rates
-GET /api/stats/top-cards?limit=20&min_appearances=10
-GET /api/stats/daily-trends?days=14
-```
-
-These return:
-
-- High-level totals (`summary`)
-- Win rates grouped by character
-- Card power leaderboard (win rate with sample-size floor)
-- Recent daily trend points (runs + win rate)
-
-> Full Public API Documentation: [Swagger Docs](https://sts2-data-collector-production.up.railway.app/docs#/public)
->
-> **NOTE**: Only the `/api/runs` endpoints are open to the public. Other endpoints require an API key.
-
-### Example usage
-
-```python
-import requests
-
-# Fetch the latest 100 runs
-resp = requests.get("https://sts2-data-collector-production.up.railway.app/api/runs", params={"limit": 100})
-runs = resp.json()["runs"]
-
-# Filter for wins
-wins = [r for r in runs if r["data"]["win"]]
-print(f"{len(wins)} wins out of {len(runs)} runs")
-```
-
-### Rate limits
-
-Public endpoints are limited to **30 requests per minute** per IP address.
-
----
-
-## Frontend dashboard (Flask)
-
-A new minimal dashboard lives in `frontend/` and consumes `/api/stats/*`.
-
-```powershell
-cd frontend
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-$env:STS2_BACKEND_URL="http://localhost:8080"
-python app.py
-```
-
-Then open `http://localhost:5000`.
-
----
-
-## Privacy
-
-- Your Steam ID is hashed before storage (never stored in plain text)
-- Only `.run` file data is uploaded (game results, not personal info)
-- Uploads are deduplicated so the same run is never sent twice
-
----
-
-## Feedback & Contributing
-
-Would love feedback on:
-
-- What stats people would actually care about (I’m looking to build a public analytics frontend too, so this would be helpful!)
-- Whether this is something you’d use or contribute to
-
-Open an issue or PR, or just reach out!
-
----
-
-*Not affiliated with Mega Crit at all, just trying to help make STS2 data projects easier/possible!*
-
-# STS2 Data Collector
-
-[![Release](https://img.shields.io/github/v/release/JoeyRussoniello/STS2-Data-Collector?style=flat-square)](https://github.com/JoeyRussoniello/STS2-Data-Collector/releases/latest)
-[![CI](https://img.shields.io/github/actions/workflow/status/JoeyRussoniello/STS2-Data-Collector/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/JoeyRussoniello/STS2-Data-Collector/actions/workflows/ci.yml)
-[![API Docs](https://img.shields.io/badge/API%20Docs-Swagger-blue?style=flat-square&logo=swagger)](https://sts2-data-collector-production.up.railway.app/docs)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
-
 There's no public dataset for Slay the Spire 2 run data yet. This project aims to change that.
 
 STS2 Data Collector is a lightweight background tool that watches for completed runs on your machine and uploads them to a shared, open database. The goal is to build a community dataset large enough to power stats pages, dashboards, visualizations, and modeling projects. Think character win rates, card power rankings, ascension breakdowns, and anything else the community comes up with.
@@ -273,7 +117,7 @@ Everything below is for developers who want to build on, self-host, or contribut
 
 The repo is a monorepo with two independent components:
 
-```bash
+```
 client/   -- Rust (edition 2024): background service, filesystem watcher, HTTP uploader
 backend/  -- Python 3.13 (FastAPI + SQLAlchemy + asyncpg): REST API, hexagonal architecture
 ```
@@ -305,7 +149,7 @@ The client is a single-binary Rust application that watches the STS2 save direct
 
 The backend follows hexagonal (ports and adapters) architecture. Business logic lives in `domain/` with no framework imports.
 
-```bash
+```
 app/
   config.py              -- Pydantic settings, reads .env
   domain/
