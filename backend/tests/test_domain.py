@@ -4,6 +4,7 @@ import hashlib
 import hmac
 
 from app.domain.models import RunRecord, hash_steam_id
+from app.domain.runs import process_run
 
 
 class TestHashSteamId:
@@ -40,4 +41,60 @@ class TestRunRecord:
         assert r.run_id == "id"
         # frozen — cannot mutate
         import dataclasses
+
         assert dataclasses.is_dataclass(r)
+
+
+class TestRunProcessing:
+    def test_process_run_builds_normalized_records(self):
+        raw = {
+            "run_id": "hash:Profile1:game1",
+            "data": {
+                "win": False,
+                "acts": ["ACT.OVERGROWTH"],
+                "seed": "SEED123",
+                "build_id": "v0.98.2",
+                "run_time": 1234,
+                "ascension": 3,
+                "game_mode": "standard",
+                "modifiers": [],
+                "start_time": 1000,
+                "was_abandoned": False,
+                "schema_version": 8,
+                "platform_type": None,
+                "killed_by_event": "NONE.NONE",
+                "killed_by_encounter": "NONE.NONE",
+                "players": [
+                    {
+                        "id": 0,
+                        "character": "IRONCLAD",
+                        "max_potion_slot_count": 3,
+                        "deck": [
+                            {
+                                "id": "CARD.STRIKE",
+                                "floor_added_to_deck": 0,
+                                "current_upgrade_level": 1,
+                            }
+                        ],
+                        "relics": [
+                            {
+                                "id": "RELIC.BURNING_BLOOD",
+                                "floor_added_to_deck": 0,
+                            }
+                        ],
+                    }
+                ],
+                "map_point_history": [[{"map_point_type": "MAP_POINT.MONSTER"}]],
+            },
+        }
+
+        processed = process_run(raw)
+
+        assert processed.run_data.run_id == "hash:Profile1:game1"
+        assert processed.run_data.killed_by_event is None
+        assert len(processed.players) == 1
+        assert processed.players[0].run_player_id == "hash:Profile1:game1_0"
+        assert len(processed.cards) == 1
+        assert len(processed.relics) == 1
+        assert len(processed.map_points) == 1
+        assert processed.map_points[0].map_point_index == 0
