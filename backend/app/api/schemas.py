@@ -21,6 +21,7 @@ REQUIRED_RUN_KEYS = {
     "killed_by_encounter",
     "killed_by_event",
     "map_point_history",
+    "players",
 }
 
 
@@ -40,7 +41,7 @@ class RunUploadRequest(BaseModel):
         return v
 
 
-#* Responses
+# * Responses
 class RunResponse(BaseModel):
     run_id: str
     steam_id_hash: str
@@ -56,3 +57,58 @@ class RunListResponse(BaseModel):
     total: int
     limit: int
     offset: int
+
+
+class RunDataResponse(BaseModel):
+    run_id: str
+    win: bool
+    acts: list[str]
+    seed: str
+    build_id: str
+    run_time: int
+    ascension: int
+    game_mode: str
+    modifiers: list[str]
+    start_time: int
+    was_abandoned: bool
+    schema_version: int
+    platform_type: str | None
+    killed_by_event: str | None
+    killed_by_encounter: str | None
+
+
+class RunPlayerResponse(BaseModel):
+    run_id: str
+    player_id: int
+    character: str
+    max_potion_slot_count: int
+    run_player_id: str
+
+
+class CardResponse(BaseModel):
+    run_player_id: str
+    id: str
+    floor_added_to_deck: int
+    current_upgrade_level: int | None
+    enchantment: dict[str, Any] | None
+
+
+class RelicResponse(BaseModel):
+    run_player_id: str
+    id: str
+    floor_added_to_deck: int
+
+
+class MapPointResponse(BaseModel):
+    run_id: str
+    map_point_index: int
+    map_point_type: str
+    raw: dict[str, Any]
+
+
+class ProcessedRunResponse(BaseModel):
+    run_data: RunDataResponse
+    players: list[RunPlayerResponse]
+    cards: list[CardResponse]
+    relics: list[RelicResponse]
+    map_points: list[MapPointResponse]
