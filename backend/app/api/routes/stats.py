@@ -32,7 +32,9 @@ limiter = Limiter(key_func=get_remote_address)
 @limiter.limit("30/minute")
 async def get_overview(
     request: Request,
-    steam_id: str | None = Query(default=None, description="Raw Steam ID to scope stats to a single player"),
+    steam_id: str | None = Query(
+        default=None, description="Raw Steam ID to scope stats to a single player"
+    ),
     svc: StatsService = Depends(get_stats_service),
 ) -> OverviewResponse:
     """Dashboard summary: counts, rates, averages, and character breakdown."""
@@ -53,14 +55,20 @@ async def get_overview(
 @limiter.limit("30/minute")
 async def get_characters(
     request: Request,
-    steam_id: str | None = Query(default=None, description="Raw Steam ID to scope stats to a single player"),
-    ascension: int | None = Query(default=None, ge=0, description="Filter by ascension level"),
+    steam_id: str | None = Query(
+        default=None, description="Raw Steam ID to scope stats to a single player"
+    ),
+    ascension: int | None = Query(
+        default=None, ge=0, description="Filter by ascension level"
+    ),
     game_mode: str | None = Query(default=None, description="Filter by game mode"),
     svc: StatsService = Depends(get_stats_service),
 ) -> list[CharacterStatsResponse]:
     """Per-character performance: win rate, avg run time, deck/relic size."""
     rows = await svc.get_characters(
-        steam_id=steam_id, ascension=ascension, game_mode=game_mode,
+        steam_id=steam_id,
+        ascension=ascension,
+        game_mode=game_mode,
     )
     return [CharacterStatsResponse(**r) for r in rows]
 
@@ -69,10 +77,16 @@ async def get_characters(
 @limiter.limit("30/minute")
 async def get_cards(
     request: Request,
-    steam_id: str | None = Query(default=None, description="Raw Steam ID to scope stats to a single player"),
+    steam_id: str | None = Query(
+        default=None, description="Raw Steam ID to scope stats to a single player"
+    ),
     character: str | None = Query(default=None, description="Filter by character"),
-    ascension: int | None = Query(default=None, ge=0, description="Filter by ascension level"),
-    min_appearances: int = Query(default=5, ge=1, description="Minimum runs a card must appear in"),
+    ascension: int | None = Query(
+        default=None, ge=0, description="Filter by ascension level"
+    ),
+    min_appearances: int = Query(
+        default=5, ge=1, description="Minimum runs a card must appear in"
+    ),
     svc: StatsService = Depends(get_stats_service),
 ) -> list[CardStatsResponse]:
     """Per-card metrics: win rate when present, avg copies, floor added."""
@@ -89,10 +103,16 @@ async def get_cards(
 @limiter.limit("30/minute")
 async def get_relics(
     request: Request,
-    steam_id: str | None = Query(default=None, description="Raw Steam ID to scope stats to a single player"),
+    steam_id: str | None = Query(
+        default=None, description="Raw Steam ID to scope stats to a single player"
+    ),
     character: str | None = Query(default=None, description="Filter by character"),
-    ascension: int | None = Query(default=None, ge=0, description="Filter by ascension level"),
-    min_appearances: int = Query(default=5, ge=1, description="Minimum runs a relic must appear in"),
+    ascension: int | None = Query(
+        default=None, ge=0, description="Filter by ascension level"
+    ),
+    min_appearances: int = Query(
+        default=5, ge=1, description="Minimum runs a relic must appear in"
+    ),
     svc: StatsService = Depends(get_stats_service),
 ) -> list[RelicStatsResponse]:
     """Per-relic metrics: win rate when present, floor acquired, character distribution."""
@@ -118,14 +138,20 @@ async def get_relics(
 @limiter.limit("30/minute")
 async def get_run_outcomes(
     request: Request,
-    steam_id: str | None = Query(default=None, description="Raw Steam ID to scope stats to a single player"),
+    steam_id: str | None = Query(
+        default=None, description="Raw Steam ID to scope stats to a single player"
+    ),
     character: str | None = Query(default=None, description="Filter by character"),
-    ascension: int | None = Query(default=None, ge=0, description="Filter by ascension level"),
+    ascension: int | None = Query(
+        default=None, ge=0, description="Filter by ascension level"
+    ),
     svc: StatsService = Depends(get_stats_service),
 ) -> RunOutcomesResponse:
     """Run outcome distribution: wins, losses, abandoned, killed-by leaderboards."""
     data = await svc.get_run_outcomes(
-        steam_id=steam_id, character=character, ascension=ascension,
+        steam_id=steam_id,
+        character=character,
+        ascension=ascension,
     )
     return RunOutcomesResponse(
         total=data["total"],
@@ -143,23 +169,27 @@ async def get_run_outcomes(
 @limiter.limit("30/minute")
 async def get_encounters(
     request: Request,
-    steam_id: str | None = Query(default=None, description="Raw Steam ID to scope stats to a single player"),
+    steam_id: str | None = Query(
+        default=None, description="Raw Steam ID to scope stats to a single player"
+    ),
     character: str | None = Query(default=None, description="Filter by character"),
-    ascension: int | None = Query(default=None, ge=0, description="Filter by ascension level"),
+    ascension: int | None = Query(
+        default=None, ge=0, description="Filter by ascension level"
+    ),
     svc: StatsService = Depends(get_stats_service),
 ) -> list[EncounterStatsResponse]:
     """Per-encounter kill stats with character breakdown."""
     rows = await svc.get_encounters(
-        steam_id=steam_id, character=character, ascension=ascension,
+        steam_id=steam_id,
+        character=character,
+        ascension=ascension,
     )
     return [
         EncounterStatsResponse(
             encounter=r["encounter"],
             kill_count=r["kill_count"],
             kill_share=r["kill_share"],
-            characters=[
-                EncounterCharacterBreakdown(**c) for c in r["characters"]
-            ],
+            characters=[EncounterCharacterBreakdown(**c) for c in r["characters"]],
         )
         for r in rows
     ]
@@ -169,13 +199,19 @@ async def get_encounters(
 @limiter.limit("30/minute")
 async def get_deck_growth(
     request: Request,
-    steam_id: str | None = Query(default=None, description="Raw Steam ID to scope stats to a single player"),
+    steam_id: str | None = Query(
+        default=None, description="Raw Steam ID to scope stats to a single player"
+    ),
     character: str | None = Query(default=None, description="Filter by character"),
-    ascension: int | None = Query(default=None, ge=0, description="Filter by ascension level"),
+    ascension: int | None = Query(
+        default=None, ge=0, description="Filter by ascension level"
+    ),
     svc: StatsService = Depends(get_stats_service),
 ) -> list[DeckGrowthEntry]:
     """Deck size progression by floor: avg deck size, cards added, upgrades."""
     rows = await svc.get_deck_growth(
-        steam_id=steam_id, character=character, ascension=ascension,
+        steam_id=steam_id,
+        character=character,
+        ascension=ascension,
     )
     return [DeckGrowthEntry(**r) for r in rows]

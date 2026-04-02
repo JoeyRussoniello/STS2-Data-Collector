@@ -193,9 +193,7 @@ class TestStatsDeckGrowth:
     @pytest.mark.golden
     def test_filters_accepted(self, client):
         try:
-            resp = client.get(
-                "/api/stats/deck/growth?character=IRONCLAD&ascension=0"
-            )
+            resp = client.get("/api/stats/deck/growth?character=IRONCLAD&ascension=0")
             assert resp.status_code == 200
         except Exception:
             pass

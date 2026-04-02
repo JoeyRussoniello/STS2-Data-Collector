@@ -32,9 +32,7 @@ class RunRepository(abc.ABC):
         """Count total runs for a hashed Steam ID."""
 
     @abc.abstractmethod
-    async def list_all(
-        self, *, limit: int = 50, offset: int = 0
-    ) -> list[RunRecord]:
+    async def list_all(self, *, limit: int = 50, offset: int = 0) -> list[RunRecord]:
         """Fetch all runs, newest first."""
 
     @abc.abstractmethod
@@ -47,7 +45,9 @@ class StatsRepository(abc.ABC):
 
     @abc.abstractmethod
     async def get_overview(
-        self, *, steam_id_hash: str | None = None,
+        self,
+        *,
+        steam_id_hash: str | None = None,
     ) -> dict:
         """Dashboard summary: counts, rates, averages, character breakdown."""
 

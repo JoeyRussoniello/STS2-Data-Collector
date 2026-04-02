@@ -22,6 +22,4 @@ class RunRecord:
 
 def hash_steam_id(steam_id: str, salt: str) -> str:
     """One-way HMAC-SHA256 hash of a Steam ID, hex-encoded."""
-    return hmac.new(
-        salt.encode(), steam_id.encode(), hashlib.sha256
-    ).hexdigest()
+    return hmac.new(salt.encode(), steam_id.encode(), hashlib.sha256).hexdigest()
