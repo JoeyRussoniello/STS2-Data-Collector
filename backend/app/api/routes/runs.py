@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.api.dependencies import get_run_service
+from app.api.dependencies import get_run_service, verify_api_key
 from app.api.schemas import (
     CardResponse,
     MapPointResponse,
@@ -24,7 +24,11 @@ from app.domain.services import RunService
 
 logger = logging.getLogger("sts2.runs")
 
-router = APIRouter(prefix="/runs", tags=["runs"])
+router = APIRouter(
+    prefix="/runs",
+    tags=["runs"],
+    dependencies=[Depends(verify_api_key)],
+)
 
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 

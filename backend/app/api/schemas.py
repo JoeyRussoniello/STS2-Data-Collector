@@ -112,3 +112,99 @@ class ProcessedRunResponse(BaseModel):
     cards: list[CardResponse]
     relics: list[RelicResponse]
     map_points: list[MapPointResponse]
+
+
+# ---------------------------------------------------------------------------
+# Stats response schemas
+# ---------------------------------------------------------------------------
+
+
+class CharacterBreakdown(BaseModel):
+    character: str
+    run_count: int
+    win_count: int
+    win_rate: float
+
+
+class OverviewResponse(BaseModel):
+    run_count: int
+    win_count: int
+    win_rate: float
+    abandon_rate: float
+    avg_run_time_seconds: float
+    avg_ascension: float
+    avg_acts_cleared: float
+    characters: list[CharacterBreakdown]
+
+
+class CharacterStatsResponse(BaseModel):
+    character: str
+    run_count: int
+    win_count: int
+    win_rate: float
+    avg_run_time_seconds: float
+    avg_deck_size: float
+    avg_relic_count: float
+
+
+class CardStatsResponse(BaseModel):
+    card_id: str
+    times_in_deck: int
+    win_rate_when_present: float
+    avg_copies_per_deck: float
+    avg_floor_added: float
+    avg_upgrade_level: float | None
+
+
+class CharacterDistribution(BaseModel):
+    character: str
+    count: int
+
+
+class RelicStatsResponse(BaseModel):
+    relic_id: str
+    times_present: int
+    win_rate_when_present: float
+    avg_floor_acquired: float
+    characters: list[CharacterDistribution]
+
+
+class KilledByEntry(BaseModel):
+    name: str
+    count: int
+    share: float
+
+
+class ActsReachedEntry(BaseModel):
+    acts: list[str]
+    count: int
+
+
+class RunOutcomesResponse(BaseModel):
+    total: int
+    wins: int
+    losses: int
+    abandoned: int
+    win_rate: float
+    killed_by_encounter: list[KilledByEntry]
+    killed_by_event: list[KilledByEntry]
+    acts_reached: list[ActsReachedEntry]
+
+
+class EncounterCharacterBreakdown(BaseModel):
+    character: str
+    kill_count: int
+
+
+class EncounterStatsResponse(BaseModel):
+    encounter: str
+    kill_count: int
+    kill_share: float
+    characters: list[EncounterCharacterBreakdown]
+
+
+class DeckGrowthEntry(BaseModel):
+    floor: int
+    avg_deck_size: float
+    cards_added: int
+    upgrades_at_floor: int
