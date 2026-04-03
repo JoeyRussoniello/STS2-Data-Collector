@@ -19,6 +19,7 @@ use crate::upload::{UploadResult, Uploader};
 use crate::watcher::{start_watchers, RunEvent};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+const FRONTEND_URL_BASE: &'static str = "https://sts-2-data-collector.vercel.app/";
 
 fn main() {
     if let Err(err) = run() {
@@ -87,6 +88,19 @@ fn run() -> io::Result<()> {
     if !retry_queue.is_empty() {
         println!("  ({} upload(s) queued for retry)", retry_queue.len());
     }
+
+    // Print personal dashboard links for discovered players
+    let mut steam_ids: Vec<&str> = existing.iter().map(|r| r.steam_id.as_str()).collect();
+    steam_ids.sort();
+    steam_ids.dedup();
+    if !steam_ids.is_empty() {
+        println!();
+        println!("View your stats at:");
+        for sid in &steam_ids {
+            println!("  -> {FRONTEND_URL_BASE}/#overview/{sid}");
+        }
+    }
+
     println!();
 
     // --- event loop: process events + retry queue ---
