@@ -1,4 +1,4 @@
-import { fmt, pct, fmtTime, wrColor } from '../utils.js';
+import { ascensionOptionsHtml, fmt, pct, fmtTime, wrColor } from '../utils.js';
 
 export async function renderCharacters(el, api, steamId = null) {
   el.innerHTML = '<div class="loading-state"><div class="eldritch-spinner"></div><p>Summoning character records…</p></div>';
@@ -23,7 +23,7 @@ export async function renderCharacters(el, api, steamId = null) {
           <label class="filter-label">Ascension</label>
           <select class="filter-select" id="char-asc">
             <option value="">All Levels</option>
-            ${Array.from({length: 21}, (_, i) => `<option value="${i}">Ascension ${i}</option>`).join('')}
+            ${ascensionOptionsHtml()}
           </select>
         </div>
         <div class="filter-group">

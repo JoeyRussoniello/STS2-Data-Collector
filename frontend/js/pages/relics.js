@@ -1,4 +1,4 @@
-import { fmt, pct, wrColor } from '../utils.js';
+import { ascensionOptionsHtml, fmt, pct, wrColor } from '../utils.js';
 
 export async function renderRelics(el, api, steamId = null) {
   el.innerHTML = '<div class="loading-state"><div class="eldritch-spinner"></div><p>Channeling relic frequencies…</p></div>';
@@ -28,7 +28,7 @@ export async function renderRelics(el, api, steamId = null) {
           <label class="filter-label">Ascension</label>
           <select class="filter-select" id="relic-asc">
             <option value="">All Levels</option>
-            ${Array.from({length: 21}, (_, i) => `<option value="${i}">Ascension ${i}</option>`).join('')}
+            ${ascensionOptionsHtml()}
           </select>
         </div>
         <button class="filter-btn" id="relic-apply">Apply Filters</button>

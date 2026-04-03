@@ -40,3 +40,10 @@ export function wrColor(rate) {
 export function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+export function ascensionOptionsHtml(maxAscension = 10) {
+  return Array.from(
+    { length: maxAscension + 1 },
+    (_, i) => `<option value="${i}">Ascension ${i}</option>`
+  ).join('');
+}

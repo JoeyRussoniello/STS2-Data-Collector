@@ -1,4 +1,4 @@
-import { fmt, pct, wrColor } from '../utils.js';
+import { ascensionOptionsHtml, fmt, pct, wrColor } from '../utils.js';
 
 let sortCol = 'win_rate_when_present';
 let sortAsc = false;
@@ -44,7 +44,7 @@ export async function renderCards(el, api, steamId = null) {
           <label class="filter-label">Ascension</label>
           <select class="filter-select" id="card-asc">
             <option value="">All Levels</option>
-            ${Array.from({length: 21}, (_, i) => `<option value="${i}">Ascension ${i}</option>`).join('')}
+            ${ascensionOptionsHtml()}
           </select>
         </div>
         <div class="filter-group">
