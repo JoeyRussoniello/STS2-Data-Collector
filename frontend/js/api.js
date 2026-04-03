@@ -1,9 +1,15 @@
+import { sleep } from './utils.js';
+
 const FALLBACK_API_URL = 'https://sts2-data-collector-production.up.railway.app';
 const ENV_API_URL = globalThis.__STS2_API_URL__;
+const REQUEST_RETRY_DELAYS_MS = [300, 800, 1500];
+const RETRYABLE_STATUS_CODES = new Set([502, 503, 504]);
 
 function normalizeBaseUrl(url) {
   return url.replace(/\/+$/, '');
 }
+
+
 
 class ApiClient {
   constructor() {
@@ -20,9 +26,26 @@ class ApiClient {
     for (const [k, v] of Object.entries(params)) {
       if (v !== null && v !== undefined && v !== '') url.searchParams.set(k, v);
     }
-    const resp = await fetch(url.toString());
-    if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
-    return resp.json();
+    const requestUrl = url.toString();
+
+    for (let attempt = 0; attempt <= REQUEST_RETRY_DELAYS_MS.length; attempt++) {
+      try {
+        const resp = await fetch(requestUrl);
+        if (resp.ok) return resp.json();
+
+        const shouldRetry =
+          RETRYABLE_STATUS_CODES.has(resp.status) &&
+          attempt < REQUEST_RETRY_DELAYS_MS.length;
+
+        if (!shouldRetry) throw new Error(`${resp.status} ${resp.statusText}`);
+      } catch (error) {
+        if (attempt >= REQUEST_RETRY_DELAYS_MS.length) throw error;
+      }
+
+      await sleep(REQUEST_RETRY_DELAYS_MS[attempt]);
+    }
+
+    throw new Error('Request failed after retry attempts');
   }
 
   getOverview(steamId)          { return this.request('/api/stats/overview', { steam_id: steamId }); }

@@ -1,9 +1,10 @@
 import { api } from './api.js';
-import { renderOverview } from './pages/overview.js';
-import { renderCharacters } from './pages/characters.js';
-import { renderCards } from './pages/cards.js';
-import { renderRelics } from './pages/relics.js';
 import { renderSettings } from './components/settings.js';
+import { renderCards } from './pages/cards.js';
+import { renderCharacters } from './pages/characters.js';
+import { renderOverview } from './pages/overview.js';
+import { renderRelics } from './pages/relics.js';
+import { sleep } from './utils.js';
 
 const pages = {
   overview: renderOverview,
@@ -11,6 +12,8 @@ const pages = {
   cards: renderCards,
   relics: renderRelics,
 };
+const STARTUP_HEALTH_RETRY_DELAYS_MS = [300, 800, 1500];
+
 
 function parseHash() {
   const raw = location.hash.replace('#', '') || 'overview';
@@ -93,9 +96,22 @@ function initSteamIdInput() {
   });
 }
 
+async function waitForArchiveReadiness() {
+  for (let attempt = 0; attempt <= STARTUP_HEALTH_RETRY_DELAYS_MS.length; attempt++) {
+    try {
+      await api.checkHealth();
+      return;
+    } catch (_) {
+      if (attempt >= STARTUP_HEALTH_RETRY_DELAYS_MS.length) return;
+      await sleep(STARTUP_HEALTH_RETRY_DELAYS_MS[attempt]);
+    }
+  }
+}
+
 window.addEventListener('hashchange', navigate);
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   initSettings();
   initSteamIdInput();
+  await waitForArchiveReadiness();
   navigate();
 });
