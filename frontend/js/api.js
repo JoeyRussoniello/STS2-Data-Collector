@@ -2,12 +2,12 @@ const DEFAULT_LOCAL_URL = 'http://localhost:8080';
 
 class ApiClient {
   constructor() {
-    this.baseUrl = localStorage.getItem('sts2_api_url') || DEFAULT_LOCAL_URL;
+    this.baseUrl = localStorage.getItem('STS2_API_URL') || DEFAULT_LOCAL_URL;
   }
 
   setBaseUrl(url) {
     this.baseUrl = url.replace(/\/+$/, '');
-    localStorage.setItem('sts2_api_url', this.baseUrl);
+    localStorage.setItem('STS2_API_URL', this.baseUrl);
   }
 
   getBaseUrl() {

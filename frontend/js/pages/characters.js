@@ -1,17 +1,4 @@
-function fmt(id) {
-  return id.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/\b\w/g, c => c.toUpperCase());
-}
-function pct(v) { return (v * 100).toFixed(1) + '%'; }
-function fmtTime(s) {
-  if (!s) return '—';
-  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
-  return m > 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}:${String(sec).padStart(2, '0')}`;
-}
-function wrColor(rate) {
-  if (rate >= 0.55) return 'var(--secondary)';
-  if (rate >= 0.40) return 'var(--primary)';
-  return 'var(--tertiary-dim)';
-}
+import { fmt, pct, fmtTime, wrColor } from '../utils.js';
 
 export async function renderCharacters(el, api, steamId = null) {
   el.innerHTML = '<div class="loading-state"><div class="eldritch-spinner"></div><p>Summoning character records…</p></div>';

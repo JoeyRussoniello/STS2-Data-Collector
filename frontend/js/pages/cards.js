@@ -1,12 +1,4 @@
-function fmt(id) {
-  return id.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/\b\w/g, c => c.toUpperCase());
-}
-function pct(v) { return (v * 100).toFixed(1) + '%'; }
-function wrColor(rate) {
-  if (rate >= 0.55) return 'var(--secondary)';
-  if (rate >= 0.40) return 'var(--primary)';
-  return 'var(--tertiary-dim)';
-}
+import { fmt, pct, wrColor } from '../utils.js';
 
 let sortCol = 'win_rate_when_present';
 let sortAsc = false;

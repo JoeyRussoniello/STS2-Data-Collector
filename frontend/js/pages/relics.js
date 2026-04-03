@@ -1,12 +1,4 @@
-function fmt(id) {
-  return id.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/\b\w/g, c => c.toUpperCase());
-}
-function pct(v) { return (v * 100).toFixed(1) + '%'; }
-function wrColor(rate) {
-  if (rate >= 0.55) return 'var(--secondary)';
-  if (rate >= 0.40) return 'var(--primary)';
-  return 'var(--tertiary-dim)';
-}
+import { fmt, pct, wrColor } from '../utils.js';
 
 export async function renderRelics(el, api, steamId = null) {
   el.innerHTML = '<div class="loading-state"><div class="eldritch-spinner"></div><p>Channeling relic frequencies…</p></div>';
