@@ -3,7 +3,7 @@ import { renderOverview } from './pages/overview.js';
 import { renderCharacters } from './pages/characters.js';
 import { renderCards } from './pages/cards.js';
 import { renderRelics } from './pages/relics.js';
-import { renderSettings, updateApiIndicator } from './components/settings.js';
+import { renderSettings } from './components/settings.js';
 
 const pages = {
   overview: renderOverview,
@@ -97,6 +97,5 @@ window.addEventListener('hashchange', navigate);
 window.addEventListener('DOMContentLoaded', () => {
   initSettings();
   initSteamIdInput();
-  updateApiIndicator(api);
   navigate();
 });

@@ -1,13 +1,14 @@
-const DEFAULT_LOCAL_URL = 'http://localhost:8080';
+const FALLBACK_API_URL = 'https://sts2-data-collector-production.up.railway.app';
+const ENV_API_URL = globalThis.__STS2_API_URL__;
+
+function normalizeBaseUrl(url) {
+  return url.replace(/\/+$/, '');
+}
 
 class ApiClient {
   constructor() {
-    this.baseUrl = localStorage.getItem('STS2_API_URL') || DEFAULT_LOCAL_URL;
-  }
-
-  setBaseUrl(url) {
-    this.baseUrl = url.replace(/\/+$/, '');
-    localStorage.setItem('STS2_API_URL', this.baseUrl);
+    const configuredUrl = typeof ENV_API_URL === 'string' ? ENV_API_URL.trim() : '';
+    this.baseUrl = normalizeBaseUrl(configuredUrl || FALLBACK_API_URL);
   }
 
   getBaseUrl() {
@@ -36,5 +37,4 @@ class ApiClient {
 }
 
 export const api = new ApiClient();
-export { DEFAULT_LOCAL_URL };
 

@@ -105,9 +105,8 @@ export async function renderCards(el, api, steamId = null) {
     });
   } catch (err) {
     el.innerHTML = `<div class="error-state">
-      <h2>Connection to the Archive Failed</h2>
-      <p>${err.message}</p>
-      <p class="text-dim">Check your API configuration in Settings (⚙).</p>
+      <h2>The Archives Are Eluding Us</h2>
+      <p>We're having trouble collecting your archives right now. Please refresh and try again.</p>
     </div>`;
   }
 }

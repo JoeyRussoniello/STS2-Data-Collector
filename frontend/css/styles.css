@@ -145,15 +145,6 @@ h3 { font-size: 1.2rem; line-height: 1.35; }
   padding: 16px 20px 0;
   border-top: 1px solid rgba(72,72,72,.15);
 }
-.api-indicator { display: flex; align-items: center; gap: 8px; font-size: .75rem; }
-.api-dot {
-  width: 8px; height: 8px;
-  background: var(--outline);
-  display: inline-block;
-}
-.api-dot.connected { background: var(--secondary); box-shadow: 0 0 6px var(--secondary); }
-.api-dot.disconnected { background: var(--tertiary-dim); box-shadow: 0 0 6px var(--tertiary-dim); }
-.api-label { color: var(--on-surface-dim); }
 
 /* --- Content --- */
 .content {
@@ -673,19 +664,6 @@ h3 { font-size: 1.2rem; line-height: 1.35; }
   margin-bottom: 10px;
   display: block;
 }
-.settings-options { display: flex; flex-direction: column; gap: 8px; }
-.radio-option {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
-  padding: 14px 16px;
-  background: var(--surface-container);
-  cursor: pointer;
-  transition: background .15s;
-}
-.radio-option:hover { background: var(--surface-highest); }
-.radio-option.selected { background: var(--surface-highest); border-left: 3px solid var(--primary); }
-.radio-option input[type="radio"] { accent-color: var(--primary); }
-.radio-text { font-weight: 600; font-size: .9rem; }
-.radio-desc { width: 100%; font-size: .78rem; color: var(--on-surface-dim); margin-left: 24px; }
 .settings-input {
   width: 100%;
   background: var(--surface-container);
@@ -695,6 +673,16 @@ h3 { font-size: 1.2rem; line-height: 1.35; }
   font-size: .88rem;
 }
 .settings-input:focus { outline: none; border-color: var(--secondary); }
+.settings-code {
+  display: inline-block;
+  max-width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--surface-container);
+  color: var(--on-surface);
+  font-size: .8rem;
+  overflow-wrap: anywhere;
+}
 .settings-actions { display: flex; gap: 10px; margin-top: 20px; }
 .settings-status { margin-top: 16px; font-size: .82rem; }
 .status-ok       { color: var(--secondary); }
