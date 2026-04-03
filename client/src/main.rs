@@ -19,7 +19,7 @@ use crate::upload::{UploadResult, Uploader};
 use crate::watcher::{start_watchers, RunEvent};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-const FRONTEND_URL_BASE: &'static str = "https://sts-2-data-collector.vercel.app/";
+const FRONTEND_URL_BASE: &'static str = "https://sts-2-data-collector.vercel.app";
 
 fn main() {
     if let Err(err) = run() {
