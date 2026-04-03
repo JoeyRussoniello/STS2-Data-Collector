@@ -1,0 +1,39 @@
+{% if characters %}
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Character</th>
+        <th>Runs</th>
+        <th>Wins</th>
+        <th>Win Rate</th>
+        <th>Avg Time</th>
+        <th>Avg Deck</th>
+        <th>Avg Relics</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ch in characters %}
+      <tr>
+        <td class="cell-character">
+          <span class="character-dot" data-character="{{ ch.character }}"></span>
+          {{ format_character(ch.character) }}
+        </td>
+        <td>{{ ch.run_count }}</td>
+        <td>{{ ch.win_count }}</td>
+        <td>
+          <span class="win-rate {% if ch.win_rate >= 0.5 %}win-rate--high{% elif ch.win_rate >= 0.25 %}win-rate--mid{% else %}win-rate--low{% endif %}">
+            {{ "%.1f"|format(ch.win_rate * 100) }}%
+          </span>
+        </td>
+        <td>{{ format_duration(ch.avg_run_time_seconds) }}</td>
+        <td>{{ "%.1f"|format(ch.avg_deck_size) }}</td>
+        <td>{{ "%.1f"|format(ch.avg_relic_count) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  {% include 'partials/empty_state.html' with context %}
+{% endif %}

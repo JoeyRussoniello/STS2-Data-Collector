@@ -1,0 +1,7 @@
+<div class="stat-card {{ class|default('') }}">
+  <div class="stat-label">{{ label }}</div>
+  <div class="stat-value">{{ value }}</div>
+  {% if sub is defined and sub %}
+    <div class="stat-sub">{{ sub }}</div>
+  {% endif %}
+</div>
