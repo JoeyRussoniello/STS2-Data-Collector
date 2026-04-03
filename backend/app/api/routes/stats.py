@@ -23,7 +23,7 @@ from app.api.schemas import (
 )
 from app.domain.stats import StatsService
 
-router = APIRouter(prefix="/api/stats", tags=["stats"])
+router = APIRouter(prefix="/api/stats", tags=["public-statistics"])
 
 limiter = Limiter(key_func=get_remote_address)
 
