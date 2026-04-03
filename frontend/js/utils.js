@@ -36,3 +36,7 @@ export function wrColor(rate) {
   if (rate >= 0.40) return 'var(--primary)';
   return 'var(--tertiary-dim)';
 }
+
+export function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
