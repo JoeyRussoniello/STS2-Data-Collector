@@ -3,6 +3,7 @@
 [![Release](https://img.shields.io/github/v/release/JoeyRussoniello/STS2-Data-Collector?style=flat-square)](https://github.com/JoeyRussoniello/STS2-Data-Collector/releases/latest)
 [![CI](https://img.shields.io/github/actions/workflow/status/JoeyRussoniello/STS2-Data-Collector/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/JoeyRussoniello/STS2-Data-Collector/actions/workflows/ci.yml)
 [![API Docs](https://img.shields.io/badge/API%20Docs-Swagger-blue?style=flat-square&logo=swagger)](https://sts2-data-collector-production.up.railway.app/docs)
+[![Dashboard](https://img.shields.io/badge/Eldritch%20Archive-8b5cf6?style=flat-square)](https://sts-2-data-collector.vercel.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 There's no public dataset for Slay the Spire 2 run data yet. This project aims to change that.
@@ -23,6 +24,20 @@ That's it. The collector will:
 - **File monitoring stops as soon as the executable stops running, and will catch any new runs the next time it starts up**
 
 ![Running Executable Image](./binary_image.png)
+
+## Dashboard: The Eldritch Archive
+
+**[https://sts-2-data-collector.vercel.app](https://sts-2-data-collector.vercel.app/)**
+
+The Eldritch Archive is a live analytics dashboard built on top of the collected run data. It features global stats, per-character breakdowns, card power rankings, relic win-rate leaderboards, and an encounter lethality index.
+
+After uploading data, you can view your own personal stats by appending your Steam ID to any page URL:
+
+```
+https://sts-2-data-collector.vercel.app/#overview/<your-steam-id>
+```
+
+The client prints a direct link to your personal dashboard after startup.
 
 ## Public API
 
