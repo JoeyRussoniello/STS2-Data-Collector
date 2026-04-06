@@ -1,18 +1,18 @@
-# STS2 Data Collector
+# STS2 Spire Archives
 
-[![Release](https://img.shields.io/github/v/release/JoeyRussoniello/STS2-Data-Collector?style=flat-square)](https://github.com/JoeyRussoniello/STS2-Data-Collector/releases/latest)
-[![CI](https://img.shields.io/github/actions/workflow/status/JoeyRussoniello/STS2-Data-Collector/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/JoeyRussoniello/STS2-Data-Collector/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/JoeyRussoniello/STS2-Data-Collector?style=flat-square)](https://github.com/JoeyRussoniello/Spire-Archives/releases/latest)
+[![CI](https://img.shields.io/github/actions/workflow/status/JoeyRussoniello/STS2-Data-Collector/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/JoeyRussoniello/Spire-Archives/actions/workflows/ci.yml)
 [![API Docs](https://img.shields.io/badge/API%20Docs-Swagger-blue?style=flat-square&logo=swagger)](https://sts2-data-collector-production.up.railway.app/docs)
 [![Dashboard](https://img.shields.io/badge/Eldritch%20Archive-8b5cf6?style=flat-square)](https://sts-2-data-collector.vercel.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 There's no public dataset for Slay the Spire 2 run data yet. This project aims to change that.
 
-STS2 Data Collector is a lightweight background tool that watches for completed runs on your machine and uploads them to a shared, open database. The goal is to build a community dataset large enough to power stats pages, dashboards, visualizations, and modeling projects. Think character win rates, card power rankings, ascension breakdowns, and anything else the community comes up with.
+STS2 Data Collector is a lightweight tool that collects completed runs on your machine and uploads them to a shared, open database. The goal is to build a community dataset large enough to power stats pages, meta analysis, visualizations, and modeling projects. Think character win rates, card power rankings, formalized deck synergies, ascension breakdowns, quantitative beginner guides, and anything else the community comes up with.
 
 ## Contributing runs
 
-1. [Download the latest release](https://github.com/JoeyRussoniello/STS2-Data-Collector/releases)
+1. [Download the latest release](https://github.com/JoeyRussoniello/Spire-Archives/releases)
 2. Run the executable
 
 That's it. The collector will:
