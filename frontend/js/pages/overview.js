@@ -1,4 +1,4 @@
-import { fmt, pct, fmtTime, wrColor } from '../utils.js';
+import { fmt, fmtTime, pct } from '../utils.js';
 
 export async function renderOverview(el, api, steamId = null) {
   el.innerHTML = '<div class="loading-state"><div class="eldritch-spinner"></div><p>Consulting the archives…</p></div>';
@@ -19,7 +19,7 @@ export async function renderOverview(el, api, steamId = null) {
         <h1>${steamId ? 'Personal Player Ledger' : 'The Global Thread'}</h1>
         <p class="page-header__desc">${steamId
           ? 'Stats scoped to this player\u2019s recorded ascents. All metrics reflect individual performance.'
-          : 'Aggregated data from all recorded spire ascents. Observe the cosmic balance of the Spire\u2019s second manifestation.'}</p>
+          : 'Aggregated data from all recorded spire ascents. Observe the balance of the Spire\u2019s second edition.'}</p>
       </div>
 
       <!-- Hero cards -->

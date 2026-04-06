@@ -14,7 +14,7 @@ export async function renderRelics(el, api, steamId = null) {
         <h1>Relic &amp; Encounter Analysis</h1>
         <p class="page-header__desc">${steamId
           ? 'Relic and encounter data scoped to this player\u2019s ascents.'
-          : 'Visualizing the metaphysical patterns of failure and fortune across all recent spire ascents.'}</p>
+          : 'Visualize your patterns of victory and failure by analyzing relics and lethal encounters.'}</p>
       </div>
 
       <div class="filter-bar" id="relic-filters">

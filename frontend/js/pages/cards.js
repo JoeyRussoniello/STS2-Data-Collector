@@ -30,7 +30,7 @@ export async function renderCards(el, api, steamId = null) {
         <h1>${steamId ? 'Personal Card Analytics' : 'Card Analytics Deep-Dive'}</h1>
         <p class="page-header__desc">${steamId
           ? 'Card performance data scoped to this player\u2019s recorded runs.'
-          : 'An exhaustive examination of the ethereal constructs that shape your destiny. Data harvested from the deep spires, tracking performance across every timeline.'}</p>
+          : 'An exhaustive examination of the deck constructs that shape your runs. Data harvested from the deep spires, tracking performance across every timeline.'}</p>
       </div>
 
       <div class="filter-bar" id="card-filters">

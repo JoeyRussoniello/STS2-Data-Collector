@@ -4,7 +4,7 @@ export function renderSettings(container, api) {
   container.innerHTML = `
     <div class="settings-group">
       <label class="settings-label">ARCHIVE ENDPOINT</label>
-      <p class="text-dim">The archive connection is configured by environment and cannot be changed from the dashboard.</p>
+      <p class="text-dim">The archive API connection configured by environment.</p>
       <code class="settings-code">${current}</code>
     </div>
 
